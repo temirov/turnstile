@@ -72,7 +72,7 @@ services:
 **Run as a binary (no container):**
 
 ```bash
-go mod tidy && go build -o gateway main.go
+go mod tidy && go build -o bin/turnstile .
 LISTEN_ADDR=":8080" \
 ORIGIN_ALLOWLIST="https://your-frontend.example" \
 REQUIRE_TURNSTILE="false" \
@@ -81,7 +81,7 @@ TVM_JWT_HS256_KEY="replace-with-strong-32B-secret" \
 UPSTREAM_BASE_URL="http://localhost:8081" \
 RATE_LIMIT_PER_MINUTE="60" \
 UPSTREAM_TIMEOUT_SECONDS="40" \
-./gateway
+./bin/turnstile
 ```
 
 ---
