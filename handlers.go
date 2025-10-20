@@ -136,10 +136,13 @@ func handleProtectedProxy(httpResponseWriter http.ResponseWriter, httpRequest *h
 		return
 	}
 
-	if parsedClaims.ID == "" || !replayCache.mark(parsedClaims.ID, parsedClaims.ExpiresAt.Time) {
+	if parsedClaims.ID == "" {
 		httpErrorJSON(httpResponseWriter, http.StatusUnauthorized, "replay")
 		return
 	}
+
+	tokenID := parsedClaims.ID
+	tokenExpirationTime := parsedClaims.ExpiresAt.Time
 
 	rawDpopHeader := stringsTrimSpace(httpRequest.Header.Get(headerDpop))
 	if rawDpopHeader == "" {
@@ -179,6 +182,11 @@ func handleProtectedProxy(httpResponseWriter http.ResponseWriter, httpRequest *h
 	}
 	if dpopPayloadObject.HttpUri != expectedHtu(httpRequest) {
 		httpErrorJSON(httpResponseWriter, http.StatusUnauthorized, "htu_mismatch")
+		return
+	}
+
+	if !replayCache.mark(tokenID, tokenExpirationTime) {
+		httpErrorJSON(httpResponseWriter, http.StatusUnauthorized, "replay")
 		return
 	}
 
