@@ -76,7 +76,7 @@ Fix issues one by one, working sequentially.
 
 Do not work on all issues at once. Work at one issue at a time sequntially.
 
-Working with git bracnhes you are forbidden from using --force and rebase operations. Only merges and sequential progression of changes.
+Working with git branches you are forbidden from using --force and rebase operations. Only merges and sequential progression of changes.
 
 Leave Features, BugFixes, Improvements, Maintenance sections empty when all fixes are implemented but don't delete the sections themselves.
 
