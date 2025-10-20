@@ -74,7 +74,7 @@ Fix issues one by one, working sequentially.
 12. Commit and push the changes to the remote branch.
 13. Repeat till all issues are fixed, and commits abd branches are stacked up (one starts from another).
 
-Do not work on all issues at once. Work at one issue at a time sequntially.
+Do not work on all issues at once. Work at one issue at a time sequntially. Never return back to the main branch after fixing an issues. the branches are stacked up, forming a linear progression of changes.
 
 Working with git branches you are forbidden from using --force and rebase operations. Only merges and sequential progression of changes.
 
