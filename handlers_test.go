@@ -222,6 +222,20 @@ func TestHandleProtectedProxy_AllowsGetRequests(t *testing.T) {
 		t.Fatalf("expected upstream to be invoked for GET request")
 	}
 }
+
+func TestHandleHealth_ReturnsOkWithoutAuth(t *testing.T) {
+	recorder := httptest.NewRecorder()
+	request := httptest.NewRequest(http.MethodGet, "http://gateway.example/health", nil)
+
+	handleHealth(recorder, request)
+
+	if recorder.Code != http.StatusOK {
+		t.Fatalf("expected 200 OK, got %d", recorder.Code)
+	}
+	if strings.TrimSpace(recorder.Body.String()) != "{\"status\":\"ok\"}" {
+		t.Fatalf("unexpected body: %s", recorder.Body.String())
+	}
+}
 func issueTestAccessToken(t *testing.T, signingKey []byte, tokenID string) string {
 	return issueTestAccessTokenWithThumbprint(t, signingKey, tokenID, "test-thumb")
 }

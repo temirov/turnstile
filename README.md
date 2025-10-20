@@ -4,6 +4,7 @@ A compact Go **gateway** that sits in front of any HTTP API so a **front-end-onl
 
 * `POST /tvm/issue` — optional **Turnstile** check → mint a **short-lived HS256 access token** bound to the browser’s **DPoP** key (`cnf.jkt`).
 * `POST /api` — verify **Origin allowlist**, **rate-limit**, **JWT**, **DPoP**, **replay protection** → **reverse-proxy** to your upstream API.
+* `GET /health` — lightweight readiness probe (no auth required).
 * **Built-in browser SDK** served at `/sdk/tvm.mjs` so integration is a **one-liner**.
 
 > “`/api`” is used as the example **public** path. You can expose any path you want; just keep your reverse proxy and SDK options in sync.
@@ -22,6 +23,7 @@ A compact Go **gateway** that sits in front of any HTTP API so a **front-end-onl
 ## What’s in the box
 
 * **Gateway service (Go)** with two endpoints: `/tvm/issue` and `/api`.
+* **Health check** at `/health` for container orchestration probes.
 * **Embedded SDK** served from `/sdk/tvm.mjs` (ES module).
 
   * Generates a browser **P-256** keypair (WebCrypto)

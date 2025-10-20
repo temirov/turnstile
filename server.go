@@ -44,6 +44,7 @@ func newHTTPServer(gatewayConfig serverConfig) *http.Server {
 	httpServerMux.HandleFunc("/api", func(httpResponseWriter http.ResponseWriter, httpRequest *http.Request) {
 		handleProtectedProxy(httpResponseWriter, httpRequest, gatewayConfig, replayCacheStore, rateLimiterWindow, upstreamReverseProxy)
 	})
+	httpServerMux.HandleFunc("/health", handleHealth)
 
 	return &http.Server{
 		Addr:              gatewayConfig.ListenAddress,
