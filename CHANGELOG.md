@@ -7,6 +7,7 @@ and are grouped by the date the work landed on `master`.
 
 ### Added
 
+- Go CI workflow (`.github/workflows/go-ci.yml`) ensuring tidy, fmt, vet, and race-tested builds on pushes and PRs.
 
 ### Fixed
 

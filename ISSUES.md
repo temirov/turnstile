@@ -34,7 +34,7 @@ Entries record newly discovered requests or changes, with their outcomes. No ins
 
 ### Maintenance
 
-- [ ] [TS-04] Add GitHub actions that run go tests before merging to master. As an example and an inspiration take a look at this yaml
+- [x] [TS-04] Add GitHub actions that run go tests before merging to master. As an example and an inspiration take a look at this yaml
 ```yaml
 name: Go CI
 
@@ -89,3 +89,4 @@ jobs:
         run: go test ./... -v -race -count=1
 
 ```
+      - Status: Added `.github/workflows/go-ci.yml` mirroring the template with enforced `timeout` wrappers and formatting checks.
