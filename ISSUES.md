@@ -21,5 +21,10 @@ Entries record newly discovered requests or changes, with their outcomes. No ins
       - `AttachGatewaySdk` strips `/sdk/` and serves from `http.FS(embeddedSdkFiles)` but the embedded file lives at `sdk/tvm.mjs`, so lookups for `tvm.mjs` fail.
       - Update the handler or embedded path so `/sdk/tvm.mjs` resolves correctly.
       - Status: Resolved locally; regression test and handler fix in place.
+- [X] [TS-03] Token replay cache marks tokens before DPoP verification.
+      - `handleProtectedProxy` calls `replayCache.mark` immediately after validating JWT claims (before DPoP checks).
+      - An attacker can send an invalid DPoP proof with a stolen token to poison the cache and block legitimate requests.
+      - Move the replay marking to occur only after all request proofs succeed.
+      - Status: Fixed by deferring replay marking until after DPoP validation; regression test added.
 
 ### Maintenance
