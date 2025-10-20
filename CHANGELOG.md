@@ -8,6 +8,10 @@ and are grouped by the date the work landed on `master`.
 ### Added
 
 
+### Fixed
+
+- Ensure `/sdk/tvm.mjs` serves the embedded SDK module and add coverage for the handler.
+
 ### Documentation
 
 

@@ -17,4 +17,9 @@ Entries record newly discovered requests or changes, with their outcomes. No ins
 
 ### BugFixes
 
+- [ ] [TS-02] `/sdk/tvm.mjs` returns 404 (embedded path mismatch).
+      - `AttachGatewaySdk` strips `/sdk/` and serves from `http.FS(embeddedSdkFiles)` but the embedded file lives at `sdk/tvm.mjs`, so lookups for `tvm.mjs` fail.
+      - Update the handler or embedded path so `/sdk/tvm.mjs` resolves correctly.
+      - Status: Resolved locally; regression test and handler fix in place.
+
 ### Maintenance
