@@ -91,3 +91,4 @@ jobs:
 
 ```
       - Status: Added `.github/workflows/go-ci.yml` mirroring the template with enforced `timeout` wrappers and formatting checks.
+- [ ] [TS-06] Unify the terminology: this app is called `turnstile`, its binary shall be called `turnstyle`, its docker image shall be called `turnstyle`. It will for now live at `turnstyle.mprlab.com` and the JS will be served from that url. Work through all places and remove any ambiguities or imaginary examples in favor of turnstyle.mprlab.com
