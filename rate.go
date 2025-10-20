@@ -10,7 +10,7 @@ type replayStore struct {
 	seen  map[string]int64
 }
 
-func (store *replayStore) mark(tokenID string, expirationTime time.Time) bool {
+func (store *replayStore) mark(proofID string, expirationTime time.Time) bool {
 	store.mutex.Lock()
 	defer store.mutex.Unlock()
 	currentUnix := time.Now().Unix()
@@ -19,10 +19,10 @@ func (store *replayStore) mark(tokenID string, expirationTime time.Time) bool {
 			delete(store.seen, cachedID)
 		}
 	}
-	if _, exists := store.seen[tokenID]; exists {
+	if _, exists := store.seen[proofID]; exists {
 		return false
 	}
-	store.seen[tokenID] = expirationTime.Unix()
+	store.seen[proofID] = expirationTime.Unix()
 	return true
 }
 
