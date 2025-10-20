@@ -9,5 +9,5 @@ import (
 var embeddedSdkFiles embed.FS
 
 func AttachGatewaySdk(httpMux *http.ServeMux) {
-	httpMux.Handle("/sdk/", http.StripPrefix("/sdk/", http.FileServer(http.FS(embeddedSdkFiles))))
+	httpMux.Handle("/sdk/", http.FileServer(http.FS(embeddedSdkFiles)))
 }
