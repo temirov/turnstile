@@ -33,7 +33,7 @@ func TestNewReverseProxy_AppendsSecretWhenMissing(t *testing.T) {
 	}
 }
 
-func TestNewReverseProxy_PreservesExistingSecret(t *testing.T) {
+func TestNewReverseProxy_OverridesExistingSecret(t *testing.T) {
 	upstreamURL, parseErr := url.Parse("http://upstream.example:8080")
 	if parseErr != nil {
 		t.Fatalf("url.Parse: %v", parseErr)
@@ -50,7 +50,7 @@ func TestNewReverseProxy_PreservesExistingSecret(t *testing.T) {
 	}
 
 	reverseProxy.Director(request)
-	if request.URL.Query().Get("key") != "user" {
-		t.Fatalf("expected existing key to remain untouched")
+	if request.URL.Query().Get("key") != "super-secret" {
+		t.Fatalf("expected injected key to override existing value")
 	}
 }
