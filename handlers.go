@@ -35,7 +35,7 @@ func handleTokenIssue(httpResponseWriter http.ResponseWriter, httpRequest *http.
 		httpResponseWriter.WriteHeader(http.StatusNoContent)
 		return
 	}
-	if httpRequest.Method != http.MethodPost {
+	if httpRequest.Method != http.MethodPost && httpRequest.Method != http.MethodGet {
 		httpErrorJSON(httpResponseWriter, http.StatusMethodNotAllowed, "method_not_allowed")
 		return
 	}
@@ -105,7 +105,7 @@ func handleProtectedProxy(httpResponseWriter http.ResponseWriter, httpRequest *h
 		httpResponseWriter.WriteHeader(http.StatusNoContent)
 		return
 	}
-	if httpRequest.Method != http.MethodPost {
+	if httpRequest.Method != http.MethodPost && httpRequest.Method != http.MethodGet {
 		httpErrorJSON(httpResponseWriter, http.StatusMethodNotAllowed, "method_not_allowed")
 		return
 	}

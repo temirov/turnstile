@@ -25,7 +25,7 @@ const (
 	headerVary                      = "Vary"
 
 	headerAllowHeadersValue = "Authorization, Content-Type, DPoP"
-	headerAllowMethodsValue = "POST, OPTIONS"
+	headerAllowMethodsValue = "GET, POST, OPTIONS"
 	contentTypeJSON         = "application/json"
 
 	audienceApi          = "api-gateway"

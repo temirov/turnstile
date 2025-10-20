@@ -153,6 +153,75 @@ func TestHandleProtectedProxy_AllowsMultipleRequestsWithSameTokenAndDistinctDpop
 	}
 }
 
+func TestHandleProtectedProxy_AllowsGetRequests(t *testing.T) {
+	upstreamURL, parseErr := url.Parse("http://upstream.example")
+	if parseErr != nil {
+		t.Fatalf("url.Parse: %v", parseErr)
+	}
+
+	tokenSigningKey := []byte("abcdef0123456789abcdef0123456789")
+	tokenID := "token-get-allowed"
+
+	gatewayConfig := serverConfig{
+		AllowedOrigins:     map[string]struct{}{"https://app.example.com": {}},
+		RequireTurnstile:   false,
+		TokenLifetime:      5 * time.Minute,
+		JwtHmacKey:         tokenSigningKey,
+		UpstreamBaseURL:    upstreamURL,
+		RateLimitPerMinute: 100,
+		UpstreamTimeout:    10 * time.Second,
+	}
+
+	replayCache := &replayStore{seen: make(map[string]int64)}
+	rateLimiter := &windowLimiter{
+		windowEnd:    time.Now().Unix() + 60,
+		counts:       make(map[string]int),
+		perMinuteCap: 100,
+	}
+
+	dpopKey, keyErr := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
+	if keyErr != nil {
+		t.Fatalf("ecdsa.GenerateKey: %v", keyErr)
+	}
+	publicKey := dpopKey.PublicKey
+	publicJwk := publicJwk{
+		KeyType: "EC",
+		Curve:   "P-256",
+		X:       base64.RawURLEncoding.EncodeToString(publicKey.X.Bytes()),
+		Y:       base64.RawURLEncoding.EncodeToString(publicKey.Y.Bytes()),
+	}
+	thumbprint, thumbErr := jwkThumbprint(publicJwk)
+	if thumbErr != nil {
+		t.Fatalf("jwkThumbprint: %v", thumbErr)
+	}
+
+	accessToken := issueTestAccessTokenWithThumbprint(t, tokenSigningKey, tokenID, thumbprint)
+
+	upstreamCalled := false
+	upstreamProxy := http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+		upstreamCalled = true
+		if request.Method != http.MethodGet {
+			t.Fatalf("expected upstream to receive GET, got %s", request.Method)
+		}
+		writer.WriteHeader(http.StatusNoContent)
+	})
+
+	requestURL := "http://gateway.example/api?prompt=hello"
+	recorder := httptest.NewRecorder()
+	request := httptest.NewRequest(http.MethodGet, requestURL, nil)
+	request.Header.Set("Origin", "https://app.example.com")
+	request.Header.Set("Authorization", "Bearer "+accessToken)
+	dpopProof := mustCreateDpopProof(t, dpopKey, publicJwk, http.MethodGet, requestURL, "proof-get", time.Now())
+	request.Header.Set(headerDpop, dpopProof)
+
+	handleProtectedProxy(recorder, request, gatewayConfig, replayCache, rateLimiter, upstreamProxy)
+	if recorder.Code != http.StatusNoContent {
+		t.Fatalf("expected 204, got %d", recorder.Code)
+	}
+	if !upstreamCalled {
+		t.Fatalf("expected upstream to be invoked for GET request")
+	}
+}
 func issueTestAccessToken(t *testing.T, signingKey []byte, tokenID string) string {
 	return issueTestAccessTokenWithThumbprint(t, signingKey, tokenID, "test-thumb")
 }

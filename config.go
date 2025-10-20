@@ -17,6 +17,7 @@ const (
 	envKeyTokenLifetimeSeconds   = "TOKEN_LIFETIME_SECONDS"
 	envKeyJwtHmacKey             = "TVM_JWT_HS256_KEY"
 	envKeyUpstreamBaseURL        = "UPSTREAM_BASE_URL"
+	envKeyUpstreamServiceSecret  = "UPSTREAM_SERVICE_SECRET"
 	envKeyRateLimitPerMinute     = "RATE_LIMIT_PER_MINUTE"
 	envKeyUpstreamTimeoutSeconds = "UPSTREAM_TIMEOUT_SECONDS"
 
@@ -34,6 +35,7 @@ type serverConfig struct {
 	TokenLifetime      time.Duration
 	JwtHmacKey         []byte
 	UpstreamBaseURL    *url.URL
+	UpstreamSecretKey  string
 	RateLimitPerMinute int
 	UpstreamTimeout    time.Duration
 }
@@ -97,6 +99,8 @@ func loadConfig() (serverConfig, error) {
 		return serverConfig{}, fmt.Errorf("REQUIRE_TURNSTILE=true but missing %s", envKeyTurnstileSecret)
 	}
 
+	upstreamServiceSecret := strings.TrimSpace(os.Getenv(envKeyUpstreamServiceSecret))
+
 	return serverConfig{
 		ListenAddress:      listenAddress,
 		AllowedOrigins:     allowedOrigins,
@@ -105,6 +109,7 @@ func loadConfig() (serverConfig, error) {
 		TokenLifetime:      time.Duration(tokenLifetimeSeconds) * time.Second,
 		JwtHmacKey:         []byte(jwtHmacSecret),
 		UpstreamBaseURL:    upstreamBaseURL,
+		UpstreamSecretKey:  upstreamServiceSecret,
 		RateLimitPerMinute: rateLimitPerMinute,
 		UpstreamTimeout:    time.Duration(upstreamTimeoutSeconds) * time.Second,
 	}, nil
