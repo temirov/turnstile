@@ -28,3 +28,59 @@ Entries record newly discovered requests or changes, with their outcomes. No ins
       - Status: Fixed by deferring replay marking until after DPoP validation; regression test added.
 
 ### Maintenance
+
+- [ ] [TS-04] Add GitHub actions that run go tests before merging to master. As an example and an inspiration take a look at this yaml
+```yaml
+name: Go CI
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - '**/*.go'
+      - 'go.mod'
+      - 'go.sum'
+  pull_request:
+    branches:
+      - master
+    paths:
+      - '**/*.go'
+      - 'go.mod'
+      - 'go.sum'
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          check-latest: true
+          cache: true
+
+      - name: Verify modules
+        run: |
+          go mod tidy
+          git diff --exit-code || (echo "::error::go.mod/go.sum drift after tidy" && exit 1)
+
+      - name: Build
+        run: go build ./...
+
+      - name: Vet
+        run: go vet ./...
+
+      - name: Test (verbose, race)
+        run: go test ./... -v -race -count=1
+
+```
