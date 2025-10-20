@@ -12,6 +12,11 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
+const (
+	dpopReplayWindow     = 5 * time.Minute
+	dpopAllowedClockSkew = 5 * time.Second
+)
+
 type tokenIssueRequest struct {
 	TurnstileToken string    `json:"turnstileToken"`
 	DpopPublicJwk  publicJwk `json:"dpopPublicJwk"`
@@ -141,7 +146,6 @@ func handleProtectedProxy(httpResponseWriter http.ResponseWriter, httpRequest *h
 		return
 	}
 
-	tokenID := parsedClaims.ID
 	tokenExpirationTime := parsedClaims.ExpiresAt.Time
 
 	rawDpopHeader := stringsTrimSpace(httpRequest.Header.Get(headerDpop))
@@ -185,7 +189,33 @@ func handleProtectedProxy(httpResponseWriter http.ResponseWriter, httpRequest *h
 		return
 	}
 
-	if !replayCache.mark(tokenID, tokenExpirationTime) {
+	if dpopPayloadObject.JwtID == "" {
+		httpErrorJSON(httpResponseWriter, http.StatusUnauthorized, "missing_dpop_jti")
+		return
+	}
+
+	if dpopPayloadObject.IssuedAt == 0 {
+		httpErrorJSON(httpResponseWriter, http.StatusUnauthorized, "missing_dpop_iat")
+		return
+	}
+
+	now := time.Now()
+	issuedAtTime := time.Unix(dpopPayloadObject.IssuedAt, 0)
+	if issuedAtTime.After(now.Add(dpopAllowedClockSkew)) {
+		httpErrorJSON(httpResponseWriter, http.StatusUnauthorized, "dpop_iat_in_future")
+		return
+	}
+	if issuedAtTime.Before(now.Add(-1 * dpopReplayWindow)) {
+		httpErrorJSON(httpResponseWriter, http.StatusUnauthorized, "dpop_iat_too_old")
+		return
+	}
+
+	replayExpiresAt := issuedAtTime.Add(dpopReplayWindow)
+	if replayExpiresAt.After(tokenExpirationTime) {
+		replayExpiresAt = tokenExpirationTime
+	}
+
+	if !replayCache.mark(dpopPayloadObject.JwtID, replayExpiresAt) {
 		httpErrorJSON(httpResponseWriter, http.StatusUnauthorized, "replay")
 		return
 	}

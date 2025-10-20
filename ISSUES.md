@@ -26,6 +26,11 @@ Entries record newly discovered requests or changes, with their outcomes. No ins
       - An attacker can send an invalid DPoP proof with a stolen token to poison the cache and block legitimate requests.
       - Move the replay marking to occur only after all request proofs succeed.
       - Status: Fixed by deferring replay marking until after DPoP validation; regression test added.
+- [x] [TS-05] Access tokens become single-use due to replay cache storing by token ID.
+      - `/sdk/tvm.mjs` caches the short-lived access token and reuses it until expiry, but the gateway's `replayStore.mark` rejects the second request because it treats the token ID as a replay.
+      - Legitimate clients get `401 replay` on every request after the first one within the token lifetime.
+      - Track DPoP `jti` values instead so tokens remain reusable; expire proofs on a short rolling window.
+      - Status: Resolved by validating DPoP `iat`, caching proof `jti` within a bounded window, and extending coverage for multi-request flows.
 
 ### Maintenance
 

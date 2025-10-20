@@ -12,6 +12,7 @@ and are grouped by the date the work landed on `master`.
 
 - Ensure `/sdk/tvm.mjs` serves the embedded SDK module and add coverage for the handler.
 - Prevent replay cache poisoning by marking tokens only after successful DPoP verification and add guard tests.
+- Permit multiple requests per access token by enforcing DPoP `jti` replay detection with issued-at validation.
 
 ### Documentation
 
