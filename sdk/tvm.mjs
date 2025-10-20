@@ -37,7 +37,7 @@ export function createGatewayClient(options) {
   async function fetchResponse(requestPayload, init) {
     const effectivePath = init?.path || normalizedOptions.apiPath;
     const requestUrl = joinUrl(normalizedOptions.baseUrl, effectivePath);
-    const methodName = "POST";
+    const methodName = (init?.method || "POST").toUpperCase();
 
     const cryptoKeyPair = await ensureKeyPair(keyState);
     const { accessToken } = await ensureAccessToken({
@@ -52,14 +52,25 @@ export function createGatewayClient(options) {
       cryptoKeyPair: cryptoKeyPair
     });
 
+    const headers = {
+      "Authorization": "Bearer " + accessToken,
+      "DPoP": dpopJwt
+    };
+    const shouldSendBody = methodName !== "GET" && methodName !== "HEAD";
+    if (shouldSendBody) {
+      headers["Content-Type"] = "application/json";
+    }
+
+    if (init?.headers) {
+      for (const [headerName, headerValue] of Object.entries(init.headers)) {
+        headers[headerName] = headerValue;
+      }
+    }
+
     const response = await fetch(requestUrl, {
       method: methodName,
-      headers: {
-        "Authorization": "Bearer " + accessToken,
-        "DPoP": dpopJwt,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(requestPayload || {}),
+      headers: headers,
+      body: shouldSendBody ? JSON.stringify(requestPayload || {}) : undefined,
       signal: init?.signal
     });
     return response;
@@ -215,4 +226,3 @@ function removeLeadingZeroes(bytes) {
   while (startIndex < bytes.length - 1 && bytes[startIndex] === 0x00) startIndex++;
   return bytes.slice(startIndex);
 }
-

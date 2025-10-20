@@ -7,17 +7,29 @@ import (
 	"time"
 )
 
-func newHTTPServer(gatewayConfig serverConfig) *http.Server {
-	// reverse proxy (base origin only, no path)
-	upstreamReverseProxy := httputil.NewSingleHostReverseProxy(gatewayConfig.UpstreamBaseURL)
-	originalDirector := upstreamReverseProxy.Director
-	upstreamReverseProxy.Director = func(incomingRequest *http.Request) {
+func newReverseProxy(gatewayConfig serverConfig) *httputil.ReverseProxy {
+	reverseProxy := httputil.NewSingleHostReverseProxy(gatewayConfig.UpstreamBaseURL)
+	originalDirector := reverseProxy.Director
+	reverseProxy.Director = func(incomingRequest *http.Request) {
 		originalDirector(incomingRequest)
+		if gatewayConfig.UpstreamSecretKey != "" {
+			queryValues := incomingRequest.URL.Query()
+			if _, hasKey := queryValues["key"]; !hasKey {
+				queryValues.Set("key", gatewayConfig.UpstreamSecretKey)
+				incomingRequest.URL.RawQuery = queryValues.Encode()
+			}
+		}
 	}
-	upstreamReverseProxy.ErrorHandler = func(httpResponseWriter http.ResponseWriter, httpRequest *http.Request, proxyError error) {
+	reverseProxy.ErrorHandler = func(httpResponseWriter http.ResponseWriter, httpRequest *http.Request, proxyError error) {
 		log.Printf("reverse proxy error: %v", proxyError)
 		httpErrorJSON(httpResponseWriter, http.StatusBadGateway, "upstream_error")
 	}
+	return reverseProxy
+}
+
+func newHTTPServer(gatewayConfig serverConfig) *http.Server {
+	// reverse proxy (base origin only, no path)
+	upstreamReverseProxy := newReverseProxy(gatewayConfig)
 
 	replayCacheStore := &replayStore{seen: make(map[string]int64)}
 	rateLimiterWindow := &windowLimiter{

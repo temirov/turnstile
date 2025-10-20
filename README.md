@@ -84,6 +84,25 @@ UPSTREAM_TIMEOUT_SECONDS="40" \
 ./bin/turnstile
 ```
 
+## Prebuilt Docker image
+
+Published images are available on GitHub Container Registry and are rebuilt on every push to `master` and on tags:
+
+```bash
+docker pull ghcr.io/temirov/turnstile:latest
+
+docker run --rm \
+  -e LISTEN_ADDR=":8080" \
+  -e ORIGIN_ALLOWLIST="https://app.example" \
+  -e REQUIRE_TURNSTILE="true" \
+  -e TURNSTILE_SECRET_KEY="1x0000000000000000000000000000000AA" \
+  -e TVM_JWT_HS256_KEY="replace-with-strong-32B-secret" \
+  -e UPSTREAM_BASE_URL="http://upstream:8080" \
+  ghcr.io/temirov/turnstile:latest
+```
+
+Use the same environment variables described in the configuration reference to match your deployment.
+
 ---
 
 ## Reverse proxy (TLS, public)
@@ -177,6 +196,7 @@ You can route multiple backends by varying `path` (e.g., `"/api/search"`, `"/api
 | `TOKEN_LIFETIME_SECONDS`   | no         | `300`                                         | `300`   | Access token TTL; keep short.               |
 | `TVM_JWT_HS256_KEY`        | **yes**    | random 32+ bytes                              | —       | HS256 signing key for tokens.               |
 | `UPSTREAM_BASE_URL`        | **yes**    | `http://upstream:8080`                        | —       | **Base origin only** (no path).             |
+| `UPSTREAM_SERVICE_SECRET`  | no         | `super-secret-value`                          | —       | Injected as `key` query parameter for upstreams that expect a shared secret. |
 | `RATE_LIMIT_PER_MINUTE`    | no         | `60`                                          | `60`    | Per Origin+IP limit per 60s window.         |
 | `UPSTREAM_TIMEOUT_SECONDS` | no         | `40`                                          | `40`    | Per-request upstream timeout.               |
 
@@ -215,4 +235,3 @@ You can route multiple backends by varying `path` (e.g., `"/api/search"`, `"/api
 ## License
 
 Add your preferred license text here.
-

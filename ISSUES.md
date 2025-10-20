@@ -4,7 +4,7 @@ Entries record newly discovered requests or changes, with their outcomes. No ins
 
 ### Features
 
-- [ ] [TS-01] Protect llm-proxy endpoint using turnstile.
+- [x] [TS-01] Protect llm-proxy endpoint using turnstile.
       - analyze turnstile and ensure comprehensive code documentation @README.md. Add documentation, if needed
       - Use tools/mprlab-gateway to work on orchestration of the final solution using docker. It's a separate repo and will require creating its own branches/pushing to its own repo/opening its own PRs
       - Analyze tools/llm-proxy to understand the urls to protect
@@ -12,6 +12,7 @@ Entries record newly discovered requests or changes, with their outcomes. No ins
             1. code changes that build a docker turnstile image on Github
             2. Changes to tools/mprlab-gateway to orchestrate the protection of llm-proxy endpoints. It shall rely/pull the newly built turnstile docker image and supply configuration through .env
             3. A write up (EXAMPLE.md) on how to integrate the changes into a front-end app (JS) so that a front-end application can make requests to llm-proxy without exposing a secret to authenticate against llm-proxy.
+      - Status: Added Docker image workflow, wired mprlab gateway through the Turnstile container, and documented browser integration in `EXAMPLE.md`.
 
 ### Improvements
 
