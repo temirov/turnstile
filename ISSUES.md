@@ -32,6 +32,11 @@ Entries record newly discovered requests or changes, with their outcomes. No ins
       - Legitimate clients get `401 replay` on every request after the first one within the token lifetime.
       - Track DPoP `jti` values instead so tokens remain reusable; expire proofs on a short rolling window.
       - Status: Resolved by validating DPoP `iat`, caching proof `jti` within a bounded window, and extending coverage for multi-request flows.
+- [x] [TS-06] Gateway skips injecting service secret when client supplies `key` query parameter.
+      - `newReverseProxy` only sets the `key` query parameter when it is absent.
+      - A browser request that includes `key` (empty or wrong) reaches `llm-proxy` without the expected secret, causing 403s despite valid Turnstile/JWT proofs.
+      - Override incoming `key` values so the upstream always receives the configured secret.
+      - Status: Overwrite `key` during proxying and add regression coverage for existing query parameters.
 
 ### Maintenance
 

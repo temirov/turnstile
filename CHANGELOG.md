@@ -16,6 +16,7 @@ and are grouped by the date the work landed on `master`.
 - Prevent replay cache poisoning by marking tokens only after successful DPoP verification and add guard tests.
 - Permit multiple requests per access token by enforcing DPoP `jti` replay detection with issued-at validation.
 - Support GET requests, inject upstream service secrets, and extend the SDK for llm-proxy coverage.
+- Ensure upstream service secret injection overrides client-provided `key` parameters.
 
 ### Documentation
 

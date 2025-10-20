@@ -14,10 +14,8 @@ func newReverseProxy(gatewayConfig serverConfig) *httputil.ReverseProxy {
 		originalDirector(incomingRequest)
 		if gatewayConfig.UpstreamSecretKey != "" {
 			queryValues := incomingRequest.URL.Query()
-			if _, hasKey := queryValues["key"]; !hasKey {
-				queryValues.Set("key", gatewayConfig.UpstreamSecretKey)
-				incomingRequest.URL.RawQuery = queryValues.Encode()
-			}
+			queryValues.Set("key", gatewayConfig.UpstreamSecretKey)
+			incomingRequest.URL.RawQuery = queryValues.Encode()
 		}
 	}
 	reverseProxy.ErrorHandler = func(httpResponseWriter http.ResponseWriter, httpRequest *http.Request, proxyError error) {
