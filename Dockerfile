@@ -3,11 +3,11 @@ WORKDIR /src
 COPY go.mod ./
 RUN go mod download
 COPY . .
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -trimpath -ldflags="-s -w" -o /out/gateway .
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -trimpath -ldflags="-s -w" -o /out/turnstile .
 
 FROM gcr.io/distroless/base-debian12
 WORKDIR /
-COPY --from=build /out/gateway /gateway
+COPY --from=build /out/turnstile /turnstile
 USER nonroot:nonroot
 EXPOSE 8080
-ENTRYPOINT ["/gateway"]
+ENTRYPOINT ["/turnstile"]

@@ -17,7 +17,7 @@ func TestNewReverseProxy_AppendsSecretWhenMissing(t *testing.T) {
 	}
 
 	reverseProxy := newReverseProxy(config)
-	request, requestErr := http.NewRequest(http.MethodGet, "http://gateway.example/api?prompt=hi", nil)
+	request, requestErr := http.NewRequest(http.MethodGet, "http://turnstile.example/api?prompt=hi", nil)
 	if requestErr != nil {
 		t.Fatalf("http.NewRequest: %v", requestErr)
 	}
@@ -44,7 +44,7 @@ func TestNewReverseProxy_OverridesExistingSecret(t *testing.T) {
 	}
 
 	reverseProxy := newReverseProxy(config)
-	request, requestErr := http.NewRequest(http.MethodGet, "http://gateway.example/api?prompt=hi&key=user", nil)
+	request, requestErr := http.NewRequest(http.MethodGet, "http://turnstile.example/api?prompt=hi&key=user", nil)
 	if requestErr != nil {
 		t.Fatalf("http.NewRequest: %v", requestErr)
 	}

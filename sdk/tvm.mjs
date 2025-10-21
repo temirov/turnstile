@@ -1,9 +1,9 @@
-// tvm.mjs — Browser SDK for Turnstile + DPoP + JWT gateway
+// tvm.mjs — Browser SDK for Turnstile (turnstile.mprlab.com) with DPoP + JWT gateway
 
 /**
  * createGatewayClient(options)
  * options: {
- *   baseUrl: string,                       // e.g., "https://api.example.com"
+ *   baseUrl: string,                       // e.g., "https://turnstile.mprlab.com"
  *   tokenPath?: string,                    // default "/tvm/issue"
  *   apiPath?: string,                      // default "/api"
  *   turnstileTokenProvider?: () => Promise<string> | string
