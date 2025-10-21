@@ -110,4 +110,5 @@ jobs:
       - `http.ServeMux` patterns without a trailing slash only match the exact path. The server registers `/api` but not `/api/`, so `/api/search` or `/api/generate` fall through to a 404 despite the README promising multi-route support.
       - Register subtree handlers for `/api/` alongside the existing `/api` route and add regression coverage proving nested paths proxy correctly.
       - Status: Added `/api/` handler, kept `/api`, and introduced `TestNewHTTPServer_RoutesApiSubpaths` to assert nested routes return the DPoP 401 instead of 404.
-- [ ] [TS-11] Propagate the same renames from TS-10 in the nested tools/mprlab-gateway repo (service name, .env.ets, ETS image tag) and push that project’s branch when ready—the files were updated locally but remain outside this commit.
+- [x] [TS-11] Propagate the same renames from TS-10 in the nested tools/mprlab-gateway repo (service name, .env.ets, ETS image tag) and push that project’s branch when ready—the files were updated locally but remain outside this commit.
+      - Status: Renamed the compose service to `llm-ets`, switched env samples to `.env.ets`, refreshed docs, and pushed nested repo branch `maintenance/TS-11-ets-alignment`.

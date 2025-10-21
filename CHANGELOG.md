@@ -24,6 +24,7 @@ and are grouped by the date the work landed on `master`.
 
 - Rebrand binaries, container image, and docs to the Ephemeral Token Service (ETS) with the `ets.mprlab.com` domain.
 - Remove references to external vendors and point widget/verification flows to ETS-hosted endpoints.
+- Capture the `tools/mprlab-gateway` ETS alignment (compose service rename, `.env.ets` sample) and linked maintenance branch.
 
 
 ### Removed

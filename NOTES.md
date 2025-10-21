@@ -86,3 +86,8 @@ All feature, improvement, bugfix, and maintenance backlog entries now live in `I
 
 *Use `PLAN.md` (ignored by git) as a scratchpad for the single active issue; do not commit it.*
 
+## BugFixes
+- [x] [TS-12] `/api/*` requests now route through the protected proxy (branch `bugfix/TS-12-api-subpaths`, commit `c3d6810`).
+
+## Maintenance
+- [x] [TS-11] Pushed `tools/mprlab-gateway` branch `maintenance/TS-11-ets-alignment` to publish the ETS renames (ref `d83ed34`).
