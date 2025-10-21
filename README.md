@@ -72,6 +72,9 @@ services:
     expose: ["8080"]
 ```
 
+Run `./bin/ets generate-secrets` (or the container equivalent) to populate
+`TVM_JWT_HS256_KEY` and `UPSTREAM_SERVICE_SECRET` before starting ETS.
+
 **Run as a binary (no container):**
 
 ```bash
@@ -105,6 +108,22 @@ docker run --rm \
 ```
 
 Use the same environment variables described in the configuration reference to match your deployment.
+
+---
+
+## CLI helpers
+
+The binary exposes a helper for generating strong secrets:
+
+```bash
+go build -o bin/ets .
+./bin/ets generate-secrets
+```
+
+The command prints assignments for `TVM_JWT_HS256_KEY` and
+`UPSTREAM_SERVICE_SECRET`. Paste them into your environment or `.env` files.
+You can also invoke `./bin/ets serve`; running the binary without arguments
+still starts the server.
 
 ---
 

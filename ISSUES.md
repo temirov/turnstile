@@ -112,3 +112,5 @@ jobs:
       - Status: Added `/api/` handler, kept `/api`, and introduced `TestNewHTTPServer_RoutesApiSubpaths` to assert nested routes return the DPoP 401 instead of 404.
 - [x] [TS-11] Propagate the same renames from TS-10 in the nested tools/mprlab-gateway repo (service name, .env.ets, ETS image tag) and push that project’s branch when ready—the files were updated locally but remain outside this commit.
       - Status: Renamed the compose service to `llm-ets`, switched env samples to `.env.ets`, refreshed docs, and pushed nested repo branch `maintenance/TS-11-ets-alignment`.
+- [x] [TS-13] Provide an operator-facing CLI helper to mint strong secrets for ETS deployments.
+      - Status: Added Cobra-backed `generate-secrets` subcommand that emits both assignments, wrapped entropy errors, and documented usage in the main README.
