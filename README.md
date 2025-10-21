@@ -37,7 +37,7 @@ ETS is a compact Go **gateway** that sits in front of any HTTP API so a
 ## Request flow
 
 ```
-Browser   ──(public JWK, optional ETS)──►  POST /tvm/issue
+Browser   ──(public JWK + ETS token)──►  POST /tvm/issue
 ETS ── verifies Origin + challenge token ──► mint HS256 JWT (5 min, cnf.jkt)
 
 Browser   ──(Bearer JWT + DPoP)────────────►  POST /api
@@ -59,7 +59,6 @@ services:
     environment:
       LISTEN_ADDR: ":8080"
       ORIGIN_ALLOWLIST: "https://loopaware.mprlab.com"
-      REQUIRE_ETS: "true"                     # set "false" for local/dev
       ETS_SECRET_KEY: "replace-with-ets-secret"
       TOKEN_LIFETIME_SECONDS: "300"
       TVM_JWT_HS256_KEY: "replace-with-strong-32B-secret"
@@ -81,7 +80,6 @@ Run `./bin/ets generate-secrets` (or the container equivalent) to populate
 go mod tidy && go build -o bin/ets .
 LISTEN_ADDR=":8080" \
 ORIGIN_ALLOWLIST="https://loopaware.mprlab.com" \
-REQUIRE_ETS="false" \
 TOKEN_LIFETIME_SECONDS="300" \
 TVM_JWT_HS256_KEY="replace-with-strong-32B-secret" \
 UPSTREAM_BASE_URL="https://llm-proxy.mprlab.com" \
@@ -100,7 +98,6 @@ docker pull ghcr.io/tyemirov/ets:latest
 docker run --rm \
   -e LISTEN_ADDR=":8080" \
   -e ORIGIN_ALLOWLIST="https://loopaware.mprlab.com" \
-  -e REQUIRE_ETS="true" \
   -e ETS_SECRET_KEY="1x0000000000000000000000000000000AA" \
   -e TVM_JWT_HS256_KEY="replace-with-strong-32B-secret" \
   -e UPSTREAM_BASE_URL="https://llm-proxy.mprlab.com" \
@@ -213,7 +210,6 @@ You can route multiple backends by varying `path` (e.g., `"/api/search"`, `"/api
 | -------------------------- | ---------- | --------------------------------------------- | ------- | ------------------------------------------- |
 | `LISTEN_ADDR`              | no         | `:8080`                                       | `:8080` | Bind address.                               |
 | `ORIGIN_ALLOWLIST`         | **yes**    | `https://loopaware.mprlab.com`                | —       | Exact Origins allowed (admission + CORS).   |
-| `REQUIRE_ETS`              | no         | `true`                                        | `false` | If `true`, `/tvm/issue` verifies the ETS challenge token. |
 | `ETS_SECRET_KEY`           | when above | `1x000…`                                      | —       | Secret for ETS verification.          |
 | `TOKEN_LIFETIME_SECONDS`   | no         | `300`                                         | `300`   | Access token TTL; keep short.               |
 | `TVM_JWT_HS256_KEY`        | **yes**    | random 32+ bytes                              | —       | HS256 signing key for tokens.               |

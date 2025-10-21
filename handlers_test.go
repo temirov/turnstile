@@ -29,7 +29,6 @@ func TestHandleProtectedProxy_InvalidDpopDoesNotMarkReplayCache(t *testing.T) {
 
 	gatewayConfig := serverConfig{
 		AllowedOrigins:     map[string]struct{}{"https://app.example.com": {}},
-		RequireETS:         false,
 		TokenLifetime:      5 * time.Minute,
 		JwtHmacKey:         tokenSigningKey,
 		UpstreamBaseURL:    upstreamURL,
@@ -75,7 +74,6 @@ func TestHandleProtectedProxy_AllowsMultipleRequestsWithSameTokenAndDistinctDpop
 
 	gatewayConfig := serverConfig{
 		AllowedOrigins:     map[string]struct{}{"https://app.example.com": {}},
-		RequireETS:         false,
 		TokenLifetime:      5 * time.Minute,
 		JwtHmacKey:         tokenSigningKey,
 		UpstreamBaseURL:    upstreamURL,
@@ -164,7 +162,6 @@ func TestHandleProtectedProxy_AllowsGetRequests(t *testing.T) {
 
 	gatewayConfig := serverConfig{
 		AllowedOrigins:     map[string]struct{}{"https://app.example.com": {}},
-		RequireETS:         false,
 		TokenLifetime:      5 * time.Minute,
 		JwtHmacKey:         tokenSigningKey,
 		UpstreamBaseURL:    upstreamURL,
