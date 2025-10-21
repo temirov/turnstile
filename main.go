@@ -1,18 +1,10 @@
 package main
 
-import (
-	"log"
-	"net/http"
-)
+import "os"
 
 func main() {
-	gatewayConfig, loadConfigError := loadConfig()
-	if loadConfigError != nil {
-		log.Fatalf("config error: %v", loadConfigError)
-	}
-	httpServer := newHTTPServer(gatewayConfig)
-	log.Printf("ets listening on %s", gatewayConfig.ListenAddress)
-	if serveError := httpServer.ListenAndServe(); serveError != nil && serveError != http.ErrServerClosed {
-		log.Fatalf("server error: %v", serveError)
+	rootCommand := newRootCommand()
+	if executeError := rootCommand.Execute(); executeError != nil {
+		os.Exit(1)
 	}
 }

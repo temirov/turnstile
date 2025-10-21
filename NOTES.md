@@ -91,3 +91,6 @@ All feature, improvement, bugfix, and maintenance backlog entries now live in `I
 
 ## Maintenance
 - [x] [TS-11] Pushed `tools/mprlab-gateway` branch `maintenance/TS-11-ets-alignment` to publish the ETS renames (ref `d83ed34`).
+
+## Features
+- [x] [TS-13] Added CLI helper `generate-secrets` to produce production-grade ETS secrets with tests.
