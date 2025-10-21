@@ -1,6 +1,6 @@
 # AGENTS.md
 
-## Gravity Notes
+## Ephemeral Token Service (ETS) Notes
 
 ## Document Roles
 
