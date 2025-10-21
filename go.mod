@@ -1,4 +1,4 @@
-module github.com/MarkoPoloResearchLab/turnstile
+module github.com/tyemirov/ETS
 
 go 1.25
 

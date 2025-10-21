@@ -95,7 +95,7 @@ UPSTREAM_TIMEOUT_SECONDS="40" \
 Published images are available on GitHub Container Registry and are rebuilt on every push to `master` and on tags:
 
 ```bash
-docker pull ghcr.io/temirov/ets:latest
+docker pull ghcr.io/tyemirov/ets:latest
 
 docker run --rm \
   -e LISTEN_ADDR=":8080" \
@@ -104,7 +104,7 @@ docker run --rm \
   -e ETS_SECRET_KEY="1x0000000000000000000000000000000AA" \
   -e TVM_JWT_HS256_KEY="replace-with-strong-32B-secret" \
   -e UPSTREAM_BASE_URL="https://llm-proxy.mprlab.com" \
-  ghcr.io/temirov/ets:latest
+  ghcr.io/tyemirov/ets:latest
 ```
 
 Use the same environment variables described in the configuration reference to match your deployment.

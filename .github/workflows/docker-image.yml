@@ -41,11 +41,17 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Derive lowercase image name
+        id: image
+        run: |
+          repository='${{ github.repository }}'
+          echo "repository=$(echo "${repository}" | tr '[:upper:]' '[:lower:]')" >> "$GITHUB_OUTPUT"
+
       - name: Docker metadata
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ghcr.io/${{ github.repository }}
+          images: ghcr.io/${{ steps.image.outputs.repository }}
           tags: |
             type=raw,value=latest,enable={{is_default_branch}}
             type=sha
