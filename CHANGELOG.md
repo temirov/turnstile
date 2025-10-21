@@ -21,8 +21,8 @@ and are grouped by the date the work landed on `master`.
 
 ### Documentation
 
-- Align binaries, container image, and docs with the Turnstile naming and domain (`turnstile.mprlab.com`).
-- Remove references to external vendors and point widget/verification flows to Turnstile-hosted endpoints.
+- Rebrand binaries, container image, and docs to the Ephemeral Token Service (ETS) with the `ets.mprlab.com` domain.
+- Remove references to external vendors and point widget/verification flows to ETS-hosted endpoints.
 
 
 ### Removed

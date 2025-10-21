@@ -12,7 +12,7 @@ func TestAttachGatewaySdk_ServesEmbeddedModule(t *testing.T) {
 	AttachGatewaySdk(httpMux)
 
 	recorder := httptest.NewRecorder()
-	request := httptest.NewRequest(http.MethodGet, "http://turnstile.example/sdk/tvm.mjs", nil)
+	request := httptest.NewRequest(http.MethodGet, "http://ets.example/sdk/tvm.mjs", nil)
 
 	httpMux.ServeHTTP(recorder, request)
 

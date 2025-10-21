@@ -104,3 +104,5 @@ jobs:
       - Status: Renamed the Docker binary/entrypoint to `turnstile`, updated runtime messaging, and rewrote docs to reference `turnstile.mprlab.com` and the aligned SDK endpoint.
 - [x] [TS-09] Remove third-party vendor references across code and documentation now that Turnstile runs independently of external services.
       - Status: Replaced verification endpoints and examples with Turnstile-hosted URLs and scrubbed vendor-specific wording from docs.
+- [x] [TS-10] Rebrand the service as Ephemeral Token Service (ETS), rename binaries, and update all URLs to `ets.mprlab.com`, including integrations under `tools/mprlab-gateway/`.
+      - Status: Updated code, docs, SDK, and gateway integrations to emit ETS naming, env vars, and `ets.mprlab.com` endpoints.

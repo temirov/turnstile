@@ -29,7 +29,7 @@ func TestHandleProtectedProxy_InvalidDpopDoesNotMarkReplayCache(t *testing.T) {
 
 	gatewayConfig := serverConfig{
 		AllowedOrigins:     map[string]struct{}{"https://app.example.com": {}},
-		RequireTurnstile:   false,
+		RequireETS:         false,
 		TokenLifetime:      5 * time.Minute,
 		JwtHmacKey:         tokenSigningKey,
 		UpstreamBaseURL:    upstreamURL,
@@ -46,7 +46,7 @@ func TestHandleProtectedProxy_InvalidDpopDoesNotMarkReplayCache(t *testing.T) {
 
 	accessToken := issueTestAccessToken(t, tokenSigningKey, tokenID)
 
-	request := httptest.NewRequest(http.MethodPost, "http://turnstile.example/api", strings.NewReader(`{"hello":"world"}`))
+	request := httptest.NewRequest(http.MethodPost, "http://ets.example/api", strings.NewReader(`{"hello":"world"}`))
 	request.Header.Set("Origin", "https://app.example.com")
 	request.Header.Set("Authorization", "Bearer "+accessToken)
 
@@ -75,7 +75,7 @@ func TestHandleProtectedProxy_AllowsMultipleRequestsWithSameTokenAndDistinctDpop
 
 	gatewayConfig := serverConfig{
 		AllowedOrigins:     map[string]struct{}{"https://app.example.com": {}},
-		RequireTurnstile:   false,
+		RequireETS:         false,
 		TokenLifetime:      5 * time.Minute,
 		JwtHmacKey:         tokenSigningKey,
 		UpstreamBaseURL:    upstreamURL,
@@ -114,7 +114,7 @@ func TestHandleProtectedProxy_AllowsMultipleRequestsWithSameTokenAndDistinctDpop
 		writer.WriteHeader(http.StatusNoContent)
 	})
 
-	requestURL := "http://turnstile.example/api"
+	requestURL := "http://ets.example/api"
 	var firstProof string
 	for requestIndex := 0; requestIndex < 2; requestIndex++ {
 		recorder := httptest.NewRecorder()
@@ -164,7 +164,7 @@ func TestHandleProtectedProxy_AllowsGetRequests(t *testing.T) {
 
 	gatewayConfig := serverConfig{
 		AllowedOrigins:     map[string]struct{}{"https://app.example.com": {}},
-		RequireTurnstile:   false,
+		RequireETS:         false,
 		TokenLifetime:      5 * time.Minute,
 		JwtHmacKey:         tokenSigningKey,
 		UpstreamBaseURL:    upstreamURL,
@@ -206,7 +206,7 @@ func TestHandleProtectedProxy_AllowsGetRequests(t *testing.T) {
 		writer.WriteHeader(http.StatusNoContent)
 	})
 
-	requestURL := "http://turnstile.example/api?prompt=hello"
+	requestURL := "http://ets.example/api?prompt=hello"
 	recorder := httptest.NewRecorder()
 	request := httptest.NewRequest(http.MethodGet, requestURL, nil)
 	request.Header.Set("Origin", "https://app.example.com")
@@ -225,7 +225,7 @@ func TestHandleProtectedProxy_AllowsGetRequests(t *testing.T) {
 
 func TestHandleHealth_ReturnsOkWithoutAuth(t *testing.T) {
 	recorder := httptest.NewRecorder()
-	request := httptest.NewRequest(http.MethodGet, "http://turnstile.example/health", nil)
+	request := httptest.NewRequest(http.MethodGet, "http://ets.example/health", nil)
 
 	handleHealth(recorder, request)
 

@@ -1,12 +1,12 @@
-// tvm.mjs — Browser SDK for Turnstile (turnstile.mprlab.com) with DPoP + JWT gateway
+// tvm.mjs — Browser SDK for the Ephemeral Token Service (ets.mprlab.com) with DPoP + JWT gateway
 
 /**
  * createGatewayClient(options)
  * options: {
- *   baseUrl: string,                       // e.g., "https://turnstile.mprlab.com"
+ *   baseUrl: string,                       // e.g., "https://ets.mprlab.com"
  *   tokenPath?: string,                    // default "/tvm/issue"
  *   apiPath?: string,                      // default "/api"
- *   turnstileTokenProvider?: () => Promise<string> | string
+ *   etsTokenProvider?: () => Promise<string> | string
  * }
  *
  * Returns: {
@@ -89,7 +89,7 @@ function normalizeOptions(options) {
     baseUrl: options.baseUrl.replace(/\/+$/, ""),
     tokenPath: options.tokenPath || "/tvm/issue",
     apiPath: options.apiPath || "/api",
-    turnstileTokenProvider: options.turnstileTokenProvider
+    etsTokenProvider: options.etsTokenProvider
   };
 }
 
@@ -114,7 +114,7 @@ async function ensureAccessToken({ normalizedOptions, cryptoKeyPair, tokenState 
   const publicJwk = await crypto.subtle.exportKey("jwk", cryptoKeyPair.publicKey);
   const requestBody = {
     dpopPublicJwk: { kty: publicJwk.kty, crv: publicJwk.crv, x: publicJwk.x, y: publicJwk.y },
-    turnstileToken: await resolveTurnstileToken(normalizedOptions.turnstileTokenProvider)
+    etsToken: await resolveEtsToken(normalizedOptions.etsTokenProvider)
   };
 
   const tokenResponse = await fetch(joinUrl(normalizedOptions.baseUrl, normalizedOptions.tokenPath), {
@@ -133,7 +133,7 @@ async function ensureAccessToken({ normalizedOptions, cryptoKeyPair, tokenState 
   return { accessToken: tokenState.accessToken, expiresIn: expiresInSeconds };
 }
 
-async function resolveTurnstileToken(providerOrValue) {
+async function resolveEtsToken(providerOrValue) {
   if (!providerOrValue) return "";
   if (typeof providerOrValue === "string") return providerOrValue;
   const resolved = providerOrValue();
