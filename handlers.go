@@ -226,3 +226,9 @@ func handleProtectedProxy(httpResponseWriter http.ResponseWriter, httpRequest *h
 	httpRequest = httpRequest.WithContext(upstreamContext)
 	upstreamProxy.ServeHTTP(httpResponseWriter, httpRequest)
 }
+
+func handleHealth(httpResponseWriter http.ResponseWriter, _ *http.Request) {
+	httpResponseWriter.Header().Set(headerContentType, contentTypeJSON)
+	httpResponseWriter.WriteHeader(http.StatusOK)
+	_, _ = httpResponseWriter.Write([]byte("{\"status\":\"ok\"}"))
+}
