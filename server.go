@@ -41,9 +41,11 @@ func newHTTPServer(gatewayConfig serverConfig) *http.Server {
 	httpServerMux.HandleFunc("/tvm/issue", func(httpResponseWriter http.ResponseWriter, httpRequest *http.Request) {
 		handleTokenIssue(httpResponseWriter, httpRequest, gatewayConfig)
 	})
-	httpServerMux.HandleFunc("/api", func(httpResponseWriter http.ResponseWriter, httpRequest *http.Request) {
+	protectedProxyHandler := func(httpResponseWriter http.ResponseWriter, httpRequest *http.Request) {
 		handleProtectedProxy(httpResponseWriter, httpRequest, gatewayConfig, replayCacheStore, rateLimiterWindow, upstreamReverseProxy)
-	})
+	}
+	httpServerMux.HandleFunc("/api", protectedProxyHandler)
+	httpServerMux.HandleFunc("/api/", protectedProxyHandler)
 	httpServerMux.HandleFunc("/health", handleHealth)
 
 	return &http.Server{

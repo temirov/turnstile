@@ -18,6 +18,7 @@ and are grouped by the date the work landed on `master`.
 - Support GET requests, inject upstream service secrets, and extend the SDK for llm-proxy coverage.
 - Ensure upstream service secret injection overrides client-provided `key` parameters.
 - Expose `/health` readiness endpoint and document its usage.
+- Route `/api/*` requests through the protected proxy handler so documented subpaths return auth errors instead of 404 responses.
 
 ### Documentation
 
