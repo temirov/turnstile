@@ -100,4 +100,7 @@ jobs:
       - Deployment environments require an unauthenticated readiness probe while `/api` remains protected.
       - Implement `/health` handler returning JSON 200 and ensure documentation covers the endpoint.
       - Status: Added `.github/workflows/go-ci.yml` mirroring the template with enforced `timeout` wrappers and formatting checks.
-- [ ] [TS-07] Unify the terminology: this app is called `turnstile`, its binary shall be called `turnstile`, its docker image shall be called `turnstile`. It will for now live at `turnstile.mprlab.com` and the JS will be served from that url. Work through all places and remove any ambiguities or imaginary examples in favor of turnstile.mprlab.com
+- [x] [TS-08] Unify the terminology: this app is called `turnstile`, its binary shall be called `turnstile`, its docker image shall be called `turnstile`. It will for now live at `turnstile.mprlab.com` and the JS will be served from that url. Work through all places and remove any ambiguities or imaginary examples in favor of turnstile.mprlab.com
+      - Status: Renamed the Docker binary/entrypoint to `turnstile`, updated runtime messaging, and rewrote docs to reference `turnstile.mprlab.com` and the aligned SDK endpoint.
+- [x] [TS-09] Remove third-party vendor references across code and documentation now that Turnstile runs independently of external services.
+      - Status: Replaced verification endpoints and examples with Turnstile-hosted URLs and scrubbed vendor-specific wording from docs.

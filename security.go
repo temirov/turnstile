@@ -28,10 +28,10 @@ const (
 	headerAllowMethodsValue = "GET, POST, OPTIONS"
 	contentTypeJSON         = "application/json"
 
-	audienceApi          = "api-gateway"
+	audienceApi          = "turnstile"
 	forwardedProtoHeader = "X-Forwarded-Proto"
 
-	turnstileVerifyUrl = "https://challenges.cloudflare.com/turnstile/v0/siteverify"
+	turnstileVerifyURL = "https://turnstile.mprlab.com/api/verify"
 )
 
 type publicJwk struct {
@@ -72,7 +72,7 @@ func verifyTurnstile(turnstileSecretKey string, turnstileToken string) bool {
 	formValues.Set("response", turnstileToken)
 
 	httpClient := &http.Client{Timeout: 10 * time.Second}
-	httpResponse, httpPostError := httpClient.PostForm(turnstileVerifyUrl, formValues)
+	httpResponse, httpPostError := httpClient.PostForm(turnstileVerifyURL, formValues)
 	if httpPostError != nil {
 		return false
 	}
