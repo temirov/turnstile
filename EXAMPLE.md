@@ -76,9 +76,45 @@ The browser never sends the `SERVICE_SECRET`. ETS verifies the widget
 response and DPoP, injects the secret via the `key` query parameter, and relays the
 request to `llm-proxy`.
 
-## 3. CORS and origins
+## 3. How `ets.mprlab.com` is wired
 
-Make sure ETS’s `ORIGIN_ALLOWLIST` includes every web origin that will
-call it (for example, `https://loopaware.mprlab.com`). The example above uses
-`fetchResponse` with `method: "GET"` so no request body is transmitted; the
-SDK automatically manages token caching and DPoP proofs.
+The `tools/mprlab-gateway` repo’s `ets` branch defines the production wiring:
+
+- `docker-compose.yml` runs `llm-ets` (the ETS container) alongside `llm-proxy`.
+  The `llm-ets` service depends on `llm-proxy` and loads `.env.ets`, which
+  includes:
+
+  ```dotenv
+  UPSTREAM_BASE_URL=http://llm-proxy:8080
+  UPSTREAM_SERVICE_SECRET=replace-with-llm-proxy-service-secret
+  ```
+
+  This ensures every ETS call is forwarded to `llm-proxy` on the private Docker
+  network with the correct shared secret.
+
+- `Caddyfile` declares:
+
+  ```caddy
+  ets.mprlab.com {
+      import common_site
+      reverse_proxy llm-ets:8080 {
+          transport http {
+              dial_timeout            10s
+              response_header_timeout 80s
+              read_timeout            80s
+          }
+      }
+  }
+  ```
+
+  With DNS pointing `ets.mprlab.com` at the Caddy host, HTTPS traffic is
+  terminated at Caddy and forwarded to the ETS container. Because ETS itself
+  targets `llm-proxy:8080`, the chain `browser → ets.mprlab.com → llm-ets →
+  llm-proxy` works without exposing the upstream secret.
+
+## 4. CORS and origins
+
+Make sure ETS’s `ORIGIN_ALLOWLIST` includes every web origin that will call it
+(for example, `https://loopaware.mprlab.com`). The example above uses
+`fetchResponse` with `method: "GET"` so no request body is transmitted; the SDK
+automatically manages token caching and DPoP proofs.

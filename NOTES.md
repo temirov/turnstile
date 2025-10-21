@@ -94,3 +94,4 @@ All feature, improvement, bugfix, and maintenance backlog entries now live in `I
 
 ## Features
 - [x] [TS-13] Added CLI helper `generate-secrets` to produce production-grade ETS secrets with tests.
+- [x] [TS-14] Updated `tools/mprlab-gateway` env samples and docs to rely on the ETS CLI–generated secrets and clarified the proxy flow in `EXAMPLE.md`.
