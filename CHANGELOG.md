@@ -29,4 +29,4 @@ and are grouped by the date the work landed on `master`.
 
 ### Removed
 
-- `REQUIRE_ETS` configuration flag; ETS verification is now always enforced and the service refuses to boot without `ETS_SECRET_KEY`.
+- `REQUIRE_ETS` configuration flag and the external challenge verifier; token issuance is now self-contained and no longer depends on `ETS_SECRET_KEY`.

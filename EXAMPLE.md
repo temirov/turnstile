@@ -6,30 +6,11 @@ ETS service issues a short-lived access token bound to the browser’s
 DPoP key, and ETS forwards the request to `llm-proxy` while injecting
 the secret server-side.
 
-## 1. Load the ETS widget
+## 1. Import the ETS SDK
 
-Include the ETS widget on the page and render it when the user is ready
-to submit a prompt:
-
-```html
-<script src="https://ets.mprlab.com/widget.js" async defer></script>
-
-<div id="ets-placeholder"></div>
-
-<script>
-  window.etsWidgetId = null;
-  window.onload = () => {
-    window.etsWidgetId = ets.render("#ets-placeholder", {
-      sitekey: "1x0000000000000000000000000000000AA"
-    });
-  };
-</script>
-```
-
-## 2. Create the ETS client
-
-Import the SDK that ETS serves at `/sdk/tvm.mjs`. Configure the base
-URL and provide a function that returns the current ETS response.
+Include the browser SDK that ETS serves at `/sdk/tvm.mjs`. It generates a
+P-256 keypair, mints short-lived access tokens, and attaches DPoP proofs
+to every request.
 
 ```html
 <script type="module">
@@ -37,8 +18,7 @@ URL and provide a function that returns the current ETS response.
 
   const gatewayClient = createGatewayClient({
     baseUrl: "https://ets.mprlab.com",
-    apiPath: "/api", // ETS forwards to llm-proxy / via backend config
-    etsTokenProvider: () => window.ets.getResponse(window.etsWidgetId)
+    apiPath: "/api" // ETS forwards to llm-proxy via backend config
   });
 
   async function runPrompt(promptText, model = "gpt-4o") {
@@ -65,18 +45,16 @@ URL and provide a function that returns the current ETS response.
       document.querySelector("#response").textContent = reply;
     } catch (error) {
       console.error("Failed to call llm-proxy", error);
-    } finally {
-      window.ets.reset(window.etsWidgetId);
     }
   });
 </script>
 ```
 
-The browser never sends the `SERVICE_SECRET`. ETS verifies the widget
-response and DPoP, injects the secret via the `key` query parameter, and relays the
-request to `llm-proxy`.
+The browser never sends the `SERVICE_SECRET`. ETS validates the origin,
+mints a token for the browser’s DPoP key, injects the secret via the `key`
+query parameter, and relays the request to `llm-proxy`.
 
-## 3. How `ets.mprlab.com` is wired
+## 2. How `ets.mprlab.com` is wired
 
 The `tools/mprlab-gateway` repo’s `ets` branch defines the production wiring:
 
@@ -112,7 +90,7 @@ The `tools/mprlab-gateway` repo’s `ets` branch defines the production wiring:
   targets `llm-proxy:8080`, the chain `browser → ets.mprlab.com → llm-ets →
   llm-proxy` works without exposing the upstream secret.
 
-## 4. CORS and origins
+## 3. CORS and origins
 
 Make sure ETS’s `ORIGIN_ALLOWLIST` includes every web origin that will call it
 (for example, `https://loopaware.mprlab.com`). The example above uses

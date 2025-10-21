@@ -8,9 +8,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"math/big"
-	"net/http"
-	"net/url"
-	"time"
 
 	"github.com/golang-jwt/jwt/v5"
 )
@@ -30,8 +27,6 @@ const (
 
 	audienceApi          = "ets"
 	forwardedProtoHeader = "X-Forwarded-Proto"
-
-	etsVerifyURL = "https://ets.mprlab.com/api/verify"
 )
 
 type publicJwk struct {
@@ -61,28 +56,6 @@ type confirmation struct {
 type accessClaims struct {
 	jwt.RegisteredClaims
 	Confirmation confirmation `json:"cnf"`
-}
-
-func verifyEtsToken(etsSecretKey string, etsToken string) bool {
-	if etsToken == "" {
-		return false
-	}
-	formValues := url.Values{}
-	formValues.Set("secret", etsSecretKey)
-	formValues.Set("response", etsToken)
-
-	httpClient := &http.Client{Timeout: 10 * time.Second}
-	httpResponse, httpPostError := httpClient.PostForm(etsVerifyURL, formValues)
-	if httpPostError != nil {
-		return false
-	}
-	defer httpResponse.Body.Close()
-	var verificationResult map[string]any
-	if json.NewDecoder(httpResponse.Body).Decode(&verificationResult) != nil {
-		return false
-	}
-	successValue, hasSuccess := verificationResult["success"].(bool)
-	return hasSuccess && successValue
 }
 
 func jwkThumbprint(jwkObject publicJwk) (string, error) {
