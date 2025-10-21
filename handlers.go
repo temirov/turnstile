@@ -53,11 +53,9 @@ func handleTokenIssue(httpResponseWriter http.ResponseWriter, httpRequest *http.
 		return
 	}
 
-	if gatewayConfig.RequireETS {
-		if ok := verifyEtsToken(gatewayConfig.EtsSecretKey, tokenRequest.EtsToken); !ok {
-			httpErrorJSON(httpResponseWriter, http.StatusForbidden, "ets_failed")
-			return
-		}
+	if ok := verifyEtsToken(gatewayConfig.EtsSecretKey, tokenRequest.EtsToken); !ok {
+		httpErrorJSON(httpResponseWriter, http.StatusForbidden, "ets_failed")
+		return
 	}
 
 	if tokenRequest.DpopPublicJwk.KeyType != "EC" || tokenRequest.DpopPublicJwk.Curve != "P-256" {

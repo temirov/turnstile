@@ -116,3 +116,5 @@ jobs:
       - Status: Added Cobra-backed `generate-secrets` subcommand that emits both assignments, wrapped entropy errors, and documented usage in the main README.
 - [x] [TS-14] Align gateway orchestration samples with the ETS CLI secret workflow.
       - Status: Pointed `.env.ets.sample` and the gateway README at `ets generate-secrets`, and clarified the front-end example to show how `ets.mprlab.com` proxies to `llm-proxy`.
+- [x] [TS-15] Remove the legacy `REQUIRE_ETS` flag so ETS verification is always enforced.
+      - Status: Config loader now requires `ETS_SECRET_KEY`, handlers always verify ETS tokens, docs updated, and coverage added for the new startup contract.

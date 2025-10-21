@@ -67,7 +67,6 @@ func TestNewHTTPServer_RoutesApiSubpaths(t *testing.T) {
 	config := serverConfig{
 		ListenAddress:      ":8080",
 		AllowedOrigins:     map[string]struct{}{"https://app.example.com": {}},
-		RequireETS:         false,
 		TokenLifetime:      5 * time.Minute,
 		JwtHmacKey:         []byte("0123456789abcdef0123456789abcdef"),
 		UpstreamBaseURL:    upstreamURL,
