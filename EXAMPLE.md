@@ -2,43 +2,43 @@
 
 This walkthrough shows how a browser application can call the protected
 `llm-proxy` service without ever handling the shared `SERVICE_SECRET`. The
-Turnstile service issues a short-lived access token bound to the browser’s
-DPoP key, and Turnstile forwards the request to `llm-proxy` while injecting
+ETS service issues a short-lived access token bound to the browser’s
+DPoP key, and ETS forwards the request to `llm-proxy` while injecting
 the secret server-side.
 
-## 1. Load the Turnstile widget
+## 1. Load the ETS widget
 
-Include the Turnstile widget on the page and render it when the user is ready
+Include the ETS widget on the page and render it when the user is ready
 to submit a prompt:
 
 ```html
-<script src="https://turnstile.mprlab.com/widget.js" async defer></script>
+<script src="https://ets.mprlab.com/widget.js" async defer></script>
 
-<div id="turnstile-placeholder"></div>
+<div id="ets-placeholder"></div>
 
 <script>
-  window.turnstileWidgetId = null;
+  window.etsWidgetId = null;
   window.onload = () => {
-    window.turnstileWidgetId = turnstile.render("#turnstile-placeholder", {
+    window.etsWidgetId = ets.render("#ets-placeholder", {
       sitekey: "1x0000000000000000000000000000000AA"
     });
   };
 </script>
 ```
 
-## 2. Create the Turnstile client
+## 2. Create the ETS client
 
-Import the SDK that Turnstile serves at `/sdk/tvm.mjs`. Configure the base
-URL and provide a function that returns the current Turnstile response.
+Import the SDK that ETS serves at `/sdk/tvm.mjs`. Configure the base
+URL and provide a function that returns the current ETS response.
 
 ```html
 <script type="module">
-  import { createGatewayClient } from "https://turnstile.mprlab.com/sdk/tvm.mjs";
+  import { createGatewayClient } from "https://ets.mprlab.com/sdk/tvm.mjs";
 
   const gatewayClient = createGatewayClient({
-    baseUrl: "https://turnstile.mprlab.com",
-    apiPath: "/api", // Turnstile forwards to llm-proxy / via backend config
-    turnstileTokenProvider: () => window.turnstile.getResponse(window.turnstileWidgetId)
+    baseUrl: "https://ets.mprlab.com",
+    apiPath: "/api", // ETS forwards to llm-proxy / via backend config
+    etsTokenProvider: () => window.ets.getResponse(window.etsWidgetId)
   });
 
   async function runPrompt(promptText, model = "gpt-4o") {
@@ -53,7 +53,7 @@ URL and provide a function that returns the current Turnstile response.
       path: "/?" + params.toString()
     });
     if (!response.ok) {
-      throw new Error("Turnstile error " + response.status + ": " + (await response.text()));
+      throw new Error("ETS error " + response.status + ": " + (await response.text()));
     }
     return await response.text();
   }
@@ -66,19 +66,19 @@ URL and provide a function that returns the current Turnstile response.
     } catch (error) {
       console.error("Failed to call llm-proxy", error);
     } finally {
-      window.turnstile.reset(window.turnstileWidgetId);
+      window.ets.reset(window.etsWidgetId);
     }
   });
 </script>
 ```
 
-The browser never sends the `SERVICE_SECRET`. Turnstile verifies the widget
+The browser never sends the `SERVICE_SECRET`. ETS verifies the widget
 response and DPoP, injects the secret via the `key` query parameter, and relays the
 request to `llm-proxy`.
 
 ## 3. CORS and origins
 
-Make sure Turnstile’s `ORIGIN_ALLOWLIST` includes every web origin that will
+Make sure ETS’s `ORIGIN_ALLOWLIST` includes every web origin that will
 call it (for example, `https://loopaware.mprlab.com`). The example above uses
 `fetchResponse` with `method: "GET"` so no request body is transmitted; the
 SDK automatically manages token caching and DPoP proofs.

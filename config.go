@@ -12,8 +12,8 @@ import (
 const (
 	envKeyListenAddress          = "LISTEN_ADDR"
 	envKeyOriginAllowlist        = "ORIGIN_ALLOWLIST"
-	envKeyRequireTurnstile       = "REQUIRE_TURNSTILE"
-	envKeyTurnstileSecret        = "TURNSTILE_SECRET_KEY"
+	envKeyRequireETS             = "REQUIRE_ETS"
+	envKeyETSSecret              = "ETS_SECRET_KEY"
 	envKeyTokenLifetimeSeconds   = "TOKEN_LIFETIME_SECONDS"
 	envKeyJwtHmacKey             = "TVM_JWT_HS256_KEY"
 	envKeyUpstreamBaseURL        = "UPSTREAM_BASE_URL"
@@ -30,8 +30,8 @@ const (
 type serverConfig struct {
 	ListenAddress      string
 	AllowedOrigins     map[string]struct{}
-	RequireTurnstile   bool
-	TurnstileSecretKey string
+	RequireETS         bool
+	EtsSecretKey       string
 	TokenLifetime      time.Duration
 	JwtHmacKey         []byte
 	UpstreamBaseURL    *url.URL
@@ -93,10 +93,10 @@ func loadConfig() (serverConfig, error) {
 		return serverConfig{}, fmt.Errorf("bad %s: %v", envKeyUpstreamBaseURL, parseURLError)
 	}
 
-	requireTurnstile := strings.EqualFold(strings.TrimSpace(os.Getenv(envKeyRequireTurnstile)), "true")
-	turnstileSecretKey := strings.TrimSpace(os.Getenv(envKeyTurnstileSecret))
-	if requireTurnstile && turnstileSecretKey == "" {
-		return serverConfig{}, fmt.Errorf("REQUIRE_TURNSTILE=true but missing %s", envKeyTurnstileSecret)
+	requireETS := strings.EqualFold(strings.TrimSpace(os.Getenv(envKeyRequireETS)), "true")
+	etsSecretKey := strings.TrimSpace(os.Getenv(envKeyETSSecret))
+	if requireETS && etsSecretKey == "" {
+		return serverConfig{}, fmt.Errorf("REQUIRE_ETS=true but missing %s", envKeyETSSecret)
 	}
 
 	upstreamServiceSecret := strings.TrimSpace(os.Getenv(envKeyUpstreamServiceSecret))
@@ -104,8 +104,8 @@ func loadConfig() (serverConfig, error) {
 	return serverConfig{
 		ListenAddress:      listenAddress,
 		AllowedOrigins:     allowedOrigins,
-		RequireTurnstile:   requireTurnstile,
-		TurnstileSecretKey: turnstileSecretKey,
+		RequireETS:         requireETS,
+		EtsSecretKey:       etsSecretKey,
 		TokenLifetime:      time.Duration(tokenLifetimeSeconds) * time.Second,
 		JwtHmacKey:         []byte(jwtHmacSecret),
 		UpstreamBaseURL:    upstreamBaseURL,

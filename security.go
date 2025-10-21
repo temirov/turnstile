@@ -28,10 +28,10 @@ const (
 	headerAllowMethodsValue = "GET, POST, OPTIONS"
 	contentTypeJSON         = "application/json"
 
-	audienceApi          = "turnstile"
+	audienceApi          = "ets"
 	forwardedProtoHeader = "X-Forwarded-Proto"
 
-	turnstileVerifyURL = "https://turnstile.mprlab.com/api/verify"
+	etsVerifyURL = "https://ets.mprlab.com/api/verify"
 )
 
 type publicJwk struct {
@@ -63,16 +63,16 @@ type accessClaims struct {
 	Confirmation confirmation `json:"cnf"`
 }
 
-func verifyTurnstile(turnstileSecretKey string, turnstileToken string) bool {
-	if turnstileToken == "" {
+func verifyEtsToken(etsSecretKey string, etsToken string) bool {
+	if etsToken == "" {
 		return false
 	}
 	formValues := url.Values{}
-	formValues.Set("secret", turnstileSecretKey)
-	formValues.Set("response", turnstileToken)
+	formValues.Set("secret", etsSecretKey)
+	formValues.Set("response", etsToken)
 
 	httpClient := &http.Client{Timeout: 10 * time.Second}
-	httpResponse, httpPostError := httpClient.PostForm(turnstileVerifyURL, formValues)
+	httpResponse, httpPostError := httpClient.PostForm(etsVerifyURL, formValues)
 	if httpPostError != nil {
 		return false
 	}

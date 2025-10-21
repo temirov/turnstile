@@ -18,8 +18,8 @@ const (
 )
 
 type tokenIssueRequest struct {
-	TurnstileToken string    `json:"turnstileToken"`
-	DpopPublicJwk  publicJwk `json:"dpopPublicJwk"`
+	EtsToken      string    `json:"etsToken"`
+	DpopPublicJwk publicJwk `json:"dpopPublicJwk"`
 }
 
 type tokenIssueResponse struct {
@@ -53,9 +53,9 @@ func handleTokenIssue(httpResponseWriter http.ResponseWriter, httpRequest *http.
 		return
 	}
 
-	if gatewayConfig.RequireTurnstile {
-		if ok := verifyTurnstile(gatewayConfig.TurnstileSecretKey, tokenRequest.TurnstileToken); !ok {
-			httpErrorJSON(httpResponseWriter, http.StatusForbidden, "turnstile_failed")
+	if gatewayConfig.RequireETS {
+		if ok := verifyEtsToken(gatewayConfig.EtsSecretKey, tokenRequest.EtsToken); !ok {
+			httpErrorJSON(httpResponseWriter, http.StatusForbidden, "ets_failed")
 			return
 		}
 	}
