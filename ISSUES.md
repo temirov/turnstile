@@ -16,6 +16,11 @@ Entries record newly discovered requests or changes, with their outcomes. No ins
 
 ### Improvements
 
+- [ ] [TS-18] Support configurable upstream authentication and routing.
+      - Allow operators to define per-upstream credentials (headers, query params, bearer tokens) instead of the hard-coded `key` query param.
+      - Permit routing multiple public paths to distinct upstream endpoints within ETS configuration.
+      - Document the contract so front-end integrations understand which routes map to which upstreams.
+
 ### BugFixes
 
 - [x] [TS-02] `/sdk/tvm.mjs` returns 404 (embedded path mismatch).
@@ -120,6 +125,5 @@ jobs:
       - Status: Config loader temporarily required `ETS_SECRET_KEY`, handlers verified ETS tokens, and docs captured the interim behavior (superseded by TS-16).
 - [x] [TS-16] Make ETS self-contained by dropping external challenge verification.
       - Status: Removed `ETS_SECRET_KEY`, inlined issuance checks, updated SDK/docs, and refreshed gateway configs.
-- [ ] [TS-17] `/tvm/issue` retains GET method and lacks regression coverage after removing ETS tokens.
-      - `handleTokenIssue` still accepts GET but requires a JSON body, causing valid callers to fail with `invalid_json`.
-      - No direct test asserts successful token minting with the new request payload, so regressions can slip by.
+- [x] [TS-17] `/tvm/issue` retains GET method and lacks regression coverage after removing ETS tokens.
+      - Status: Restricted `/tvm/issue` to POST and added positive/negative issuance tests in `handlers_issue_test.go` to cover the self-contained flow.
