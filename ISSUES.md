@@ -120,6 +120,5 @@ jobs:
       - Status: Config loader temporarily required `ETS_SECRET_KEY`, handlers verified ETS tokens, and docs captured the interim behavior (superseded by TS-16).
 - [x] [TS-16] Make ETS self-contained by dropping external challenge verification.
       - Status: Removed `ETS_SECRET_KEY`, inlined issuance checks, updated SDK/docs, and refreshed gateway configs.
-- [ ] [TS-17] `/tvm/issue` retains GET method and lacks regression coverage after removing ETS tokens.
-      - `handleTokenIssue` still accepts GET but requires a JSON body, causing valid callers to fail with `invalid_json`.
-      - No direct test asserts successful token minting with the new request payload, so regressions can slip by.
+- [x] [TS-17] `/tvm/issue` retains GET method and lacks regression coverage after removing ETS tokens.
+      - Status: Restricted `/tvm/issue` to POST and added positive/negative issuance tests in `handlers_issue_test.go` to cover the self-contained flow.
