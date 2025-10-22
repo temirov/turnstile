@@ -6,7 +6,6 @@
  *   baseUrl: string,                       // e.g., "https://ets.mprlab.com"
  *   tokenPath?: string,                    // default "/tvm/issue"
  *   apiPath?: string,                      // default "/api"
- *   etsTokenProvider?: () => Promise<string> | string
  * }
  *
  * Returns: {
@@ -88,8 +87,7 @@ function normalizeOptions(options) {
   return {
     baseUrl: options.baseUrl.replace(/\/+$/, ""),
     tokenPath: options.tokenPath || "/tvm/issue",
-    apiPath: options.apiPath || "/api",
-    etsTokenProvider: options.etsTokenProvider
+    apiPath: options.apiPath || "/api"
   };
 }
 
@@ -113,8 +111,7 @@ async function ensureAccessToken({ normalizedOptions, cryptoKeyPair, tokenState 
 
   const publicJwk = await crypto.subtle.exportKey("jwk", cryptoKeyPair.publicKey);
   const requestBody = {
-    dpopPublicJwk: { kty: publicJwk.kty, crv: publicJwk.crv, x: publicJwk.x, y: publicJwk.y },
-    etsToken: await resolveEtsToken(normalizedOptions.etsTokenProvider)
+    dpopPublicJwk: { kty: publicJwk.kty, crv: publicJwk.crv, x: publicJwk.x, y: publicJwk.y }
   };
 
   const tokenResponse = await fetch(joinUrl(normalizedOptions.baseUrl, normalizedOptions.tokenPath), {
@@ -131,13 +128,6 @@ async function ensureAccessToken({ normalizedOptions, cryptoKeyPair, tokenState 
   tokenState.accessToken = tokenJson.accessToken;
   tokenState.expiresAtEpochSeconds = Math.floor(Date.now() / 1000) + (expiresInSeconds > 0 ? expiresInSeconds : 300);
   return { accessToken: tokenState.accessToken, expiresIn: expiresInSeconds };
-}
-
-async function resolveEtsToken(providerOrValue) {
-  if (!providerOrValue) return "";
-  if (typeof providerOrValue === "string") return providerOrValue;
-  const resolved = providerOrValue();
-  return typeof resolved?.then === "function" ? await resolved : resolved;
 }
 
 function base64UrlEncodeFromObject(jsonObject) {

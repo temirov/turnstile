@@ -18,7 +18,6 @@ const (
 )
 
 type tokenIssueRequest struct {
-	EtsToken      string    `json:"etsToken"`
 	DpopPublicJwk publicJwk `json:"dpopPublicJwk"`
 }
 
@@ -50,11 +49,6 @@ func handleTokenIssue(httpResponseWriter http.ResponseWriter, httpRequest *http.
 	var tokenRequest tokenIssueRequest
 	if unmarshalError := json.Unmarshal(requestBodyBytes, &tokenRequest); unmarshalError != nil {
 		httpErrorJSON(httpResponseWriter, http.StatusBadRequest, "invalid_json")
-		return
-	}
-
-	if ok := verifyEtsToken(gatewayConfig.EtsSecretKey, tokenRequest.EtsToken); !ok {
-		httpErrorJSON(httpResponseWriter, http.StatusForbidden, "ets_failed")
 		return
 	}
 
