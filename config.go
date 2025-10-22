@@ -12,7 +12,6 @@ import (
 const (
 	envKeyListenAddress          = "LISTEN_ADDR"
 	envKeyOriginAllowlist        = "ORIGIN_ALLOWLIST"
-	envKeyETSSecret              = "ETS_SECRET_KEY"
 	envKeyTokenLifetimeSeconds   = "TOKEN_LIFETIME_SECONDS"
 	envKeyJwtHmacKey             = "TVM_JWT_HS256_KEY"
 	envKeyUpstreamBaseURL        = "UPSTREAM_BASE_URL"
@@ -29,7 +28,6 @@ const (
 type serverConfig struct {
 	ListenAddress      string
 	AllowedOrigins     map[string]struct{}
-	EtsSecretKey       string
 	TokenLifetime      time.Duration
 	JwtHmacKey         []byte
 	UpstreamBaseURL    *url.URL
@@ -91,17 +89,11 @@ func loadConfig() (serverConfig, error) {
 		return serverConfig{}, fmt.Errorf("bad %s: %v", envKeyUpstreamBaseURL, parseURLError)
 	}
 
-	etsSecretKey := strings.TrimSpace(os.Getenv(envKeyETSSecret))
-	if etsSecretKey == "" {
-		return serverConfig{}, fmt.Errorf("missing %s: set the ETS verification secret", envKeyETSSecret)
-	}
-
 	upstreamServiceSecret := strings.TrimSpace(os.Getenv(envKeyUpstreamServiceSecret))
 
 	return serverConfig{
 		ListenAddress:      listenAddress,
 		AllowedOrigins:     allowedOrigins,
-		EtsSecretKey:       etsSecretKey,
 		TokenLifetime:      time.Duration(tokenLifetimeSeconds) * time.Second,
 		JwtHmacKey:         []byte(jwtHmacSecret),
 		UpstreamBaseURL:    upstreamBaseURL,

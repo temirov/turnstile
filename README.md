@@ -3,7 +3,7 @@
 ETS is a compact Go **gateway** that sits in front of any HTTP API so a
 **front-end-only** app can call it **without exposing provider keys**.
 
-* `POST /tvm/issue` — optional **ETS** check → mint a **short-lived HS256 access token** bound to the browser’s **DPoP** key (`cnf.jkt`).
+* `POST /tvm/issue` — mint a **short-lived HS256 access token** bound to the browser’s **DPoP** key (`cnf.jkt`) after origin/rate admission checks.
 * `POST /api` — verify **Origin allowlist**, **rate-limit**, **JWT**, **DPoP**, **replay protection** → **reverse-proxy** to your upstream API.
 * `GET /health` — lightweight readiness probe (no auth required).
 * **Built-in browser SDK** served at `/sdk/tvm.mjs` so integration is a **one-liner**.
@@ -16,7 +16,7 @@ ETS is a compact Go **gateway** that sits in front of any HTTP API so a
 
 * **No secrets in the browser.** Clients only hold a 5-minute, **DPoP-bound** token.
 * **General-purpose.** Works for *any* JSON HTTP API (search, generation, tiles, internal tools).
-* **No accounts or mTLS.** Capability tokens + optional ETS.
+* **No accounts or mTLS.** Capability tokens + DPoP.
 * **Zero crypto in your app.** ETS serves a **tiny JS SDK** that handles keygen, token minting, and DPoP.
 
 ---
@@ -37,11 +37,11 @@ ETS is a compact Go **gateway** that sits in front of any HTTP API so a
 ## Request flow
 
 ```
-Browser   ──(public JWK + ETS token)──►  POST /tvm/issue
-ETS ── verifies Origin + challenge token ──► mint HS256 JWT (5 min, cnf.jkt)
+Browser   ──(public JWK)──────────────────►  POST /tvm/issue
+ETS ── checks origin allowlist + rate ───► mint HS256 JWT (5 min, cnf.jkt)
 
-Browser   ──(Bearer JWT + DPoP)────────────►  POST /api
-ETS ── Origin + rate + JWT + DPoP ───► reverse-proxy to upstream
+Browser   ──(Bearer JWT + DPoP)──────────►  POST /api
+ETS ── Origin + rate + JWT + DPoP ───────► reverse-proxy to upstream
 ```
 
 ---
@@ -59,7 +59,6 @@ services:
     environment:
       LISTEN_ADDR: ":8080"
       ORIGIN_ALLOWLIST: "https://loopaware.mprlab.com"
-      ETS_SECRET_KEY: "replace-with-ets-secret"
       TOKEN_LIFETIME_SECONDS: "300"
       TVM_JWT_HS256_KEY: "replace-with-strong-32B-secret"
       UPSTREAM_BASE_URL: "https://llm-proxy.mprlab.com"  # base origin ONLY
@@ -98,7 +97,6 @@ docker pull ghcr.io/tyemirov/ets:latest
 docker run --rm \
   -e LISTEN_ADDR=":8080" \
   -e ORIGIN_ALLOWLIST="https://loopaware.mprlab.com" \
-  -e ETS_SECRET_KEY="1x0000000000000000000000000000000AA" \
   -e TVM_JWT_HS256_KEY="replace-with-strong-32B-secret" \
   -e UPSTREAM_BASE_URL="https://llm-proxy.mprlab.com" \
   ghcr.io/tyemirov/ets:latest
@@ -184,8 +182,6 @@ You don’t write crypto. Import the module ETS serves and call **one function**
 
   const gatewayClient = createGatewayClient({
     baseUrl: "https://ets.mprlab.com",
-    // Optional if ETS is enabled:
-    // etsTokenProvider: () => window.ets.getResponse(),
     // Optional if you expose a different public path:
     // apiPath: "/api",
     // tokenPath: "/tvm/issue",
@@ -210,7 +206,6 @@ You can route multiple backends by varying `path` (e.g., `"/api/search"`, `"/api
 | -------------------------- | ---------- | --------------------------------------------- | ------- | ------------------------------------------- |
 | `LISTEN_ADDR`              | no         | `:8080`                                       | `:8080` | Bind address.                               |
 | `ORIGIN_ALLOWLIST`         | **yes**    | `https://loopaware.mprlab.com`                | —       | Exact Origins allowed (admission + CORS).   |
-| `ETS_SECRET_KEY`           | when above | `1x000…`                                      | —       | Secret for ETS verification.          |
 | `TOKEN_LIFETIME_SECONDS`   | no         | `300`                                         | `300`   | Access token TTL; keep short.               |
 | `TVM_JWT_HS256_KEY`        | **yes**    | random 32+ bytes                              | —       | HS256 signing key for tokens.               |
 | `UPSTREAM_BASE_URL`        | **yes**    | `https://llm-proxy.mprlab.com`                | —       | **Base origin only** (no path).             |
@@ -224,7 +219,6 @@ You can route multiple backends by varying `path` (e.g., `"/api/search"`, `"/api
 
 * **Capability token**: HS256 JWT, audience-scoped to ETS, TTL ≈ 5 minutes.
 * **Proof-of-possession**: Token carries `cnf.jkt` (JWK thumbprint). Each request must present a **DPoP** JWS signed by that key; ETS verifies method (`htm`) and URL (`htu`).
-* **Bot friction**: Optional **ETS** at token issuance (not per request).
 * **Replay defense**: In-memory `jti` cache until expiry.
 * **Origin enforcement**: Exact allowlist; CORS headers added by ETS.
 * **Rate limiting**: Per Origin + IP within a 60-second window.
