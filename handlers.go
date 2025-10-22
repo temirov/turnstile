@@ -34,7 +34,7 @@ func handleTokenIssue(httpResponseWriter http.ResponseWriter, httpRequest *http.
 		httpResponseWriter.WriteHeader(http.StatusNoContent)
 		return
 	}
-	if httpRequest.Method != http.MethodPost && httpRequest.Method != http.MethodGet {
+	if httpRequest.Method != http.MethodPost {
 		httpErrorJSON(httpResponseWriter, http.StatusMethodNotAllowed, "method_not_allowed")
 		return
 	}
