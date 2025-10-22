@@ -70,8 +70,9 @@ services:
     expose: ["8080"]
 ```
 
-Run `./bin/ets generate-secrets` (or the container equivalent) to populate
-`TVM_JWT_HS256_KEY` and `UPSTREAM_SERVICE_SECRET` before starting ETS.
+Run `./bin/ets generate-jwt-key` (or the container equivalent) to populate
+`TVM_JWT_HS256_KEY`. Provision `UPSTREAM_SERVICE_SECRET` separately (for
+example, `openssl rand -hex 32`) so ETS can authenticate to the upstream.
 
 **Run as a binary (no container):**
 
@@ -112,13 +113,14 @@ The binary exposes a helper for generating strong secrets:
 
 ```bash
 go build -o bin/ets .
-./bin/ets generate-secrets
+./bin/ets generate-jwt-key
 ```
 
-The command prints assignments for `TVM_JWT_HS256_KEY` and
-`UPSTREAM_SERVICE_SECRET`. Paste them into your environment or `.env` files.
-You can also invoke `./bin/ets serve`; running the binary without arguments
-still starts the server.
+The command prints `TVM_JWT_HS256_KEY=<hex>`; copy it into your environment or
+`.env` files. Generate `UPSTREAM_SERVICE_SECRET` using your preferred tooling
+and keep it in sync with the upstream deployment. You can also invoke
+`./bin/ets serve`; running the binary without arguments still starts the
+server.
 
 ---
 

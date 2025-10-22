@@ -18,7 +18,7 @@ func newRootCommand() *cobra.Command {
 	}
 	rootCommand.SilenceUsage = true
 	rootCommand.AddCommand(newServeCommand())
-	rootCommand.AddCommand(newGenerateSecretsCommand())
+	rootCommand.AddCommand(newGenerateJwtKeyCommand())
 	return rootCommand
 }
 
@@ -47,24 +47,17 @@ func runServeCommand(cmd *cobra.Command, args []string) error {
 
 const secretByteLength = 32
 
-func newGenerateSecretsCommand() *cobra.Command {
+func newGenerateJwtKeyCommand() *cobra.Command {
 	return &cobra.Command{
-		Use:   "generate-secrets",
-		Short: "Generate production-grade secrets for ETS configuration",
+		Use:   "generate-jwt-key",
+		Short: "Generate a HS256 signing key for ETS token issuance",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			tokenSecret, tokenSecretError := generateRandomHex(secretByteLength)
 			if tokenSecretError != nil {
 				return fmt.Errorf("generate TVM_JWT_HS256_KEY: %w", tokenSecretError)
 			}
-			upstreamSecret, upstreamSecretError := generateRandomHex(secretByteLength)
-			if upstreamSecretError != nil {
-				return fmt.Errorf("generate UPSTREAM_SERVICE_SECRET: %w", upstreamSecretError)
-			}
 			if _, writeError := fmt.Fprintf(cmd.OutOrStdout(), "TVM_JWT_HS256_KEY=%s\n", tokenSecret); writeError != nil {
 				return fmt.Errorf("write TVM_JWT_HS256_KEY: %w", writeError)
-			}
-			if _, writeError := fmt.Fprintf(cmd.OutOrStdout(), "UPSTREAM_SERVICE_SECRET=%s\n", upstreamSecret); writeError != nil {
-				return fmt.Errorf("write UPSTREAM_SERVICE_SECRET: %w", writeError)
 			}
 			return nil
 		},

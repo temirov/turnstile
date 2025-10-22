@@ -10,6 +10,10 @@ and are grouped by the date the work landed on `master`.
 - Go CI workflow (`.github/workflows/go-ci.yml`) ensuring tidy, fmt, vet, and race-tested builds on pushes and PRs.
 - Docker image publishing pipeline (`.github/workflows/docker-image.yml`) and `EXAMPLE.md` showing browser integration with the gateway.
 
+### Changed
+
+- Replaced the `generate-secrets` CLI helper with `generate-jwt-key`, which now emits only `TVM_JWT_HS256_KEY`.
+
 ### Fixed
 
 - Ensure `/sdk/tvm.mjs` serves the embedded SDK module and add coverage for the handler.
