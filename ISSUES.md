@@ -20,6 +20,8 @@ Entries record newly discovered requests or changes, with their outcomes. No ins
       - Allow operators to define per-upstream credentials (headers, query params, bearer tokens) instead of the hard-coded `key` query param.
       - Permit routing multiple public paths to distinct upstream endpoints within ETS configuration.
       - Document the contract so front-end integrations understand which routes map to which upstreams.
+- [x] [TS-19] Simplify CLI secret generation.
+      - Status: Renamed the helper to `generate-jwt-key`, now emitting only `TVM_JWT_HS256_KEY`, and refreshed docs/env samples.
 
 ### BugFixes
 
